@@ -4,17 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/larch"
     tools:context=".MainActivity">
 
     <Button
         android:id="@+id/button"
-        android:layout_width="270dp"
-        android:layout_height="43dp"
+        android:layout_width="280dp"
+        android:layout_height="38dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="44dp"
+        android:background="@android:color/holo_green_light"
         android:onClick="stats"
         android:text="Stats"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/button2"
         app:layout_constraintStart_toStartOf="@+id/button2"
         tools:layout_editor_absoluteY="431dp" />
@@ -26,8 +29,20 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="109dp"
+        android:background="@android:color/holo_green_dark"
         android:onClick="sort"
         android:text="Sort"
         tools:layout_editor_absoluteX="53dp"
         tools:layout_editor_absoluteY="370dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="92dp"
+        android:text="RecycleMe"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+        tools:textColor="@android:color/white" />
 </RelativeLayout>
