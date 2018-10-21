@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,6 +34,8 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import static recycleme.nickduggar.com.recycleme.MainActivity.bmp;
 
 public class IdentifyActivity extends AppCompatActivity {
 
@@ -60,7 +63,7 @@ public class IdentifyActivity extends AppCompatActivity {
         imageLoc = intent.getParcelableExtra("uri");
         try {
             //bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageLoc);
-            image.setImageBitmap(MainActivity.bmp);
+            image.setImageBitmap(bmp);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -121,10 +124,13 @@ public class IdentifyActivity extends AppCompatActivity {
 
     public void identifyButtonPressed(View view) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         final byte[] imageBytes = baos.toByteArray(); // this is the octet-stream for the request
 
-        JsonObjectRequest request = new JsonObjectRequest((Request.Method.GET), URL, null, new Response.Listener<JSONObject>() {
+        JSONObject request = new JSONObject();
+        request.put("data", baos);
+
+        JsonObjectRequest strreq = new JsonObjectRequest((Request.Method.POST), URL, request, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -139,9 +145,20 @@ public class IdentifyActivity extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError e) {
+                // handle?
+            }
 
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("Prediction-key", "d8e80978ecb0463c8726626ab613ea77");
+                params.put("Content-type", "multipart/form-data"); // should this be multipart/form-data ???
+                params.put("Prediction-Key", "d8e80978ecb0463c8726626ab613ea77");
+
+                return params;
             }
         });
+
+        rQueue.add(strreq);
     }
 
     // // This sample uses the Apache HTTP client from HTTP Components (http://hc.apache.org/httpcomponents-client-ga/)

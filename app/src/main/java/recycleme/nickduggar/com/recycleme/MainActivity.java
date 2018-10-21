@@ -24,7 +24,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private Uri imagePass;
-    static protected Bitmap bmp;
+    static public Bitmap bmp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
