@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/button_identify"
         android:layout_toStartOf="@+id/button_identify"
+        android:onClick="anotherButtonClicked"
         android:text="Take another picture"
         tools:layout_editor_absoluteX="42dp"
         tools:layout_editor_absoluteY="312dp" />
@@ -46,6 +47,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="196dp"
         android:layout_marginEnd="49dp"
+        android:onClick="identifyButtonPressed"
         android:text="Identify this picture"
         tools:layout_editor_absoluteX="193dp"
         tools:layout_editor_absoluteY="312dp" />

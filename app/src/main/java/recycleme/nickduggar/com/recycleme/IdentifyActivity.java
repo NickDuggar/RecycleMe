@@ -1,23 +1,22 @@
 package recycleme.nickduggar.com.recycleme;
 
-import android.app.DownloadManager;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -30,9 +29,8 @@ public class IdentifyActivity extends AppCompatActivity {
     ImageView image;
     Button another, upload;
     int PICK_IMAGE_REQUEST = 111;
-    String URL ="http://192.168.1.101/JavaRESTfullWS/DemoService/upload";
+    String URL ="https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction/9858ba9b-91fa-42ec-ad70-9d548b8e041f/image?iterationId=1059de2e-e32a-4c4b-a5de-0c7ba379ffbe";
     Bitmap bitmap;
-    ProgressDialog progressDialog;
     RequestQueue rQueue;
 
     @Override
@@ -44,12 +42,7 @@ public class IdentifyActivity extends AppCompatActivity {
         another = findViewById(R.id.button_another);
         upload = findViewById(R.id.button_identify);
 
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        rQueue = Volley.newRequestQueue(IdentifyActivity.this);
     }
 
     public void anotherButtonClicked(View view) {
@@ -60,44 +53,50 @@ public class IdentifyActivity extends AppCompatActivity {
     }
 
     public void identifyButtonPressed(View view) {
-        progressDialog = new ProgressDialog(IdentifyActivity.this);
-        progressDialog.setMessage("Uploading, please wait...");
-        progressDialog.show();
 
         //converting image to base64 string
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageBytes = baos.toByteArray();
+        final byte[] imageBytes = baos.toByteArray();
         final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
         //sending image to server
         StringRequest request = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>(){
             @Override
-            public void onResponse(String s) {
-                progressDialog.dismiss();
-                if(s.equals("true")){
-                    Toast.makeText(IdentifyActivity.this, "Uploaded Successful", Toast.LENGTH_LONG).show();
-                }
-                else{
-                    Toast.makeText(IdentifyActivity.this, "Some error occurred!", Toast.LENGTH_LONG).show();
-                }
+            public void onResponse(String response) {
+                Log.i("VOLLEY", response);
             }
-        },new Response.ErrorListener(){
+        }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(IdentifyActivity.this, "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", error.toString());
             }
         }) {
-            //adding parameters to send
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parameters = new HashMap<String, String>();
-                parameters.put("image", imageString);
-                return parameters;
+            public byte[] getBody() {
+                return imageBytes;
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String responseString = "";
+                if (response != null) {
+                    responseString = String.valueOf(response.statusCode);
+                    // can get more details such as response.headers
+                }
+                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("Prediction-key", "1234567890abcdef");
+                params.put("Content-type", "application/octet-stream");
+
+                return params;
             }
         };
 
-        rQueue = Volley.newRequestQueue(IdentifyActivity.this);
         rQueue.add(request);
     }
 
