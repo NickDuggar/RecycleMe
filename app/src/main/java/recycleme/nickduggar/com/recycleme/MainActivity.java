@@ -24,6 +24,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private Uri imagePass;
+    static protected Bitmap bmp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK)
         {
+            try {
+                bmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imagePass);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             Log.i("DEBUG", "Managed to properly hit onActivityResult()!");
             Intent intent = new Intent(MainActivity.this, IdentifyActivity.class);
             intent.putExtra("uri", imagePass);

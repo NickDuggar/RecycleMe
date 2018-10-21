@@ -59,8 +59,8 @@ public class IdentifyActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         imageLoc = intent.getParcelableExtra("uri");
         try {
-            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageLoc);
-            image.setImageBitmap(bitmap);
+            //bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageLoc);
+            image.setImageBitmap(MainActivity.bmp);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -119,7 +119,7 @@ public class IdentifyActivity extends AppCompatActivity {
 //        rQueue.add(request);
 //    }
 
-    public void identifyButtonPressed2(View view) {
+    public void identifyButtonPressed(View view) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         final byte[] imageBytes = baos.toByteArray(); // this is the octet-stream for the request
@@ -128,7 +128,7 @@ public class IdentifyActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    IdentifyActivity.response = (String) response.get("visual masturbation");
+                    IdentifyActivity.response = (String) response.get("Tag");
                     Log.i("VOLLEY", response.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
