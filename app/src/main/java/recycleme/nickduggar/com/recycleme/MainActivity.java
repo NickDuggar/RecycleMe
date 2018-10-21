@@ -3,6 +3,7 @@ package recycleme.nickduggar.com.recycleme;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -21,6 +22,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Uri imagePass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
     public void sort(View view) {
         dispatchTakePictureIntent();
         Log.i("DEBUG", "sort button pressed");
-
+//        if(imagePass != null) {
+//            switchToIdentify();
+//        }
     }
 
     public void stats(View view) {
@@ -43,10 +48,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Intent intent = new Intent(MainActivity.this, IdentifyActivity.class);
-        intent.putExtra("uri", data.getData());
-        startActivity(intent);
-
+        if (resultCode == RESULT_OK)
+        {
+            Log.i("DEBUG", "Managed to properly hit onActivityResult()!");
+            Intent intent = new Intent(MainActivity.this, IdentifyActivity.class);
+            intent.putExtra("uri", imagePass);
+            startActivity(intent);
+        }
     }
 
     String mCurrentPhotoPath;
@@ -94,8 +102,9 @@ public class MainActivity extends AppCompatActivity {
                 Uri photoURI = FileProvider.getUriForFile(this,
                         "recycleme.nickduggar.com",
                         photoFile);
+                imagePass = photoURI;
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                this.startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
     }

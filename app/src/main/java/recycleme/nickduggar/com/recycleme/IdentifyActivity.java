@@ -2,6 +2,8 @@ package recycleme.nickduggar.com.recycleme;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
@@ -32,26 +35,29 @@ public class IdentifyActivity extends AppCompatActivity {
     String URL ="https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction/b09a8e35-0a9d-44db-8e24-a1d9215af07b/image?iterationId=cd9b0154-d2e4-4efb-ab2e-65269169fe83";
     Bitmap bitmap;
     RequestQueue rQueue;
+    Uri imageLoc;
+
 
     static String response; // this will hold the response we get from the server
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_identify);
 
         image = findViewById(R.id.image);
-        another = findViewById(R.id.button_another);
         upload = findViewById(R.id.button_identify);
 
-        rQueue = Volley.newRequestQueue(IdentifyActivity.this);
-    }
+        Intent intent = this.getIntent();
+        imageLoc = intent.getParcelableExtra("uri");
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageLoc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-    public void anotherButtonClicked(View view) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_PICK);
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
+
+        rQueue = Volley.newRequestQueue(this);
     }
 
     public void identifyButtonPressed(View view) {
