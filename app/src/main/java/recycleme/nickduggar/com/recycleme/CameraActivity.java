@@ -36,7 +36,7 @@ public class CameraActivity extends AppCompatActivity {
     }
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File("Android/data/recycleme.nickduggar.com.recycleme/files/Pictures");
+        File f = new File("my_images");
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
@@ -76,7 +76,7 @@ public class CameraActivity extends AppCompatActivity {
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "Android/data/recycleme.nickduggar.com.recycleme/files/Pictures",
+                        "recycleme.nickduggar.com.recycleme.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
