@@ -29,9 +29,11 @@ public class IdentifyActivity extends AppCompatActivity {
     ImageView image;
     Button another, upload;
     int PICK_IMAGE_REQUEST = 111;
-    String URL ="https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction/9858ba9b-91fa-42ec-ad70-9d548b8e041f/image?iterationId=1059de2e-e32a-4c4b-a5de-0c7ba379ffbe";
+    String URL ="https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction/b09a8e35-0a9d-44db-8e24-a1d9215af07b/image?iterationId=cd9b0154-d2e4-4efb-ab2e-65269169fe83";
     Bitmap bitmap;
     RequestQueue rQueue;
+
+    static String response; // this will hold the response we get from the server
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +59,14 @@ public class IdentifyActivity extends AppCompatActivity {
         //converting image to base64 string
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        final byte[] imageBytes = baos.toByteArray();
-        final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        final byte[] imageBytes = baos.toByteArray(); // this is the octet-stream for the request
+        //final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
         //sending image to server
         StringRequest request = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {
+                IdentifyActivity.response = response;
                 Log.i("VOLLEY", response);
             }
         }, new Response.ErrorListener() {
@@ -83,6 +86,7 @@ public class IdentifyActivity extends AppCompatActivity {
                 if (response != null) {
                     responseString = String.valueOf(response.statusCode);
                     // can get more details such as response.headers
+                    IdentifyActivity.response = responseString;
                 }
                 return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
             }
@@ -90,7 +94,7 @@ public class IdentifyActivity extends AppCompatActivity {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String>  params = new HashMap<String, String>();
-                params.put("Prediction-key", "1234567890abcdef");
+                params.put("Prediction-key", "d8e80978ecb0463c8726626ab613ea77");
                 params.put("Content-type", "application/octet-stream");
 
                 return params;
