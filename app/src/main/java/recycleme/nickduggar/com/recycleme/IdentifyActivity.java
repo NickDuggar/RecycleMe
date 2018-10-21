@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,10 +19,17 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.HttpResponse;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.net.URI;
+
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +58,7 @@ public class IdentifyActivity extends AppCompatActivity {
         imageLoc = intent.getParcelableExtra("uri");
         try {
             bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageLoc);
+            image.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,55 +67,113 @@ public class IdentifyActivity extends AppCompatActivity {
         rQueue = Volley.newRequestQueue(this);
     }
 
-    public void identifyButtonPressed(View view) {
+//    public void identifyButtonPressed(View view) {
+//
+//        //converting image to base64 string
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//        final byte[] imageBytes = baos.toByteArray(); // this is the octet-stream for the request
+//        //final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+//
+//        //sending image to server
+//        StringRequest request = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>(){
+//            @Override
+//            public void onResponse(String response) {
+//                IdentifyActivity.response = response;
+//                Log.i("VOLLEY", response);
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.e("VOLLEY", error.toString());
+//            }
+//        }) {
+//            @Override
+//            public byte[] getBody() {
+//                return imageBytes;
+//            }
+//
+//            @Override
+//            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+//                String responseString = "";
+//                if (response != null) {
+//                    responseString = String.valueOf(response.statusCode);
+//                    // can get more details such as response.headers
+//                    IdentifyActivity.response = responseString;
+//                }
+//                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+//            }
+//
+//            @Override
+//            public Map<String, String> getHeaders() {
+//                Map<String, String>  params = new HashMap<String, String>();
+//                params.put("Prediction-key", "d8e80978ecb0463c8726626ab613ea77");
+//                params.put("Content-type", "application/octet-stream");
+//
+//                return params;
+//            }
+//        };
+//
+//        rQueue.add(request);
+//    }
 
-        //converting image to base64 string
+    public void identifyButtonPressed2(View view) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         final byte[] imageBytes = baos.toByteArray(); // this is the octet-stream for the request
-        //final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
-        //sending image to server
-        StringRequest request = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>(){
+        JsonObjectRequest request = new JsonObjectRequest((Request.Method.GET), URL, null, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
-                IdentifyActivity.response = response;
-                Log.i("VOLLEY", response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", error.toString());
-            }
-        }) {
-            @Override
-            public byte[] getBody() {
-                return imageBytes;
-            }
-
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String responseString = "";
-                if (response != null) {
-                    responseString = String.valueOf(response.statusCode);
-                    // can get more details such as response.headers
-                    IdentifyActivity.response = responseString;
+            public void onResponse(JSONObject response) {
+                try {
+                    IdentifyActivity.response = (String) response.get("visual masturbation");
+                    Log.i("VOLLEY", response.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+
             }
+            }, new Response.ErrorListener() {
 
             @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("Prediction-key", "d8e80978ecb0463c8726626ab613ea77");
-                params.put("Content-type", "application/octet-stream");
+            public void onErrorResponse(VolleyError e) {
 
-                return params;
             }
-        };
-
-        rQueue.add(request);
+        });
     }
+
+    // // This sample uses the Apache HTTP client from HTTP Components (http://hc.apache.org/httpcomponents-client-ga/)
+
+//        public void identifyButtonPressed(View view) {
+//            HttpClient httpclient = HttpClients.createDefault();
+//
+//            try {
+//                URIBuilder builder = new URIBuilder("https://southcentralus.api.cognitive.microsoft.com/customvision/v1.1/Prediction/{projectId}/image");
+//
+//                builder.setParameter("iterationId", "4");
+//                builder.setParameter("application", "{string}");
+//
+//                URI uri = builder.build();
+//                HttpPost request = new HttpPost(uri);
+//                request.setHeader("Content-Type", "application/octet-stream");
+//                request.setHeader("Prediction-key", "d8e80978ecb0463c8726626ab613ea77");
+//
+//
+//                // Request body
+//                StringEntity reqEntity = new StringEntity("{body}");
+//                request.setEntity(reqEntity);
+//
+//                org.apache.http.HttpResponse response = httpclient.execute(request);
+//                HttpEntity entity = response.getEntity();
+//
+//                if (entity != null) {
+//                    System.out.println(EntityUtils.toString(entity));
+//                }
+//            }
+//            catch (Exception e) {
+//                System.out.println(e.getMessage());
+//            }
+//        }
 
 
 
